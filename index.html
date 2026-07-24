@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <title>Wistron InfoComm (Vietnam) - Cổng Tuyển Dụng</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' };
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    html, body {
+      touch-action: manipulation;
+      -webkit-text-size-adjust: 100%;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    input, select, textarea {
+      user-select: text;
+      -webkit-user-select: text;
+    }
+    .capitalize-first { text-transform: capitalize; }
+    .uppercase-all { text-transform: uppercase; }
+    
+    @keyframes slideIn {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+      from { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(-100%); opacity: 0; }
+    }
+    .toast-enter { animation: slideIn 0.3s ease-out forwards; }
+    .toast-exit { animation: slideOut 0.3s ease-in forwards; }
+  </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+  <!-- KHUNG TOAST NOTIFICATION -->
+  <div id="toastContainer" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center space-y-2 w-full max-w-sm px-4 pointer-events-none"></div>
+
+  <!-- HEADER VỚI LOGO WISTRON VÀ MENU 3 GẠCH -->
+  <header class="sticky top-0 z-40 bg-white dark:bg-slate-800 text-slate-800 dark:text-white shadow-md border-b border-slate-200 dark:border-slate-700">
+    <div class="max-w-xl mx-auto px-4 py-2.5 flex items-center justify-between relative">
+      
+      <!-- LOGO BẤM VÀO RELOAD TRANG -->
+      <button onclick="window.location.reload()" class="flex items-center space-x-2 text-left focus:outline-none hover:opacity-90 transition">
+        <!-- Logo Wistron bằng SVG/Ảnh -->
+        <div class="flex flex-col">
+          <div class="flex items-center space-x-1">
+            <span class="text-2xl font-black tracking-tight text-[#005288] dark:text-blue-400 font-sans">w<span class="text-[#8DC63F]">i</span>stron</span>
+          </div>
+          <span class="text-[8px] font-bold tracking-tighter text-[#005288] dark:text-slate-300 uppercase leading-none">WISTRON INFOCOMM (VIETNAM) CO., LTD</span>
+        </div>
+      </button>
+      
+      <!-- NÚT MENU 3 GẠCH & THEME TOGGLE -->
+      <div class="flex items-center space-x-2">
+        <button id="themeToggleBtn" class="p-2 bg-slate-100 dark:bg-slate-700 rounded-xl text-xs hover:bg-slate-200 transition">
+          <i class="fa-solid fa-moon dark:hidden text-slate-600"></i>
+          <i class="fa-solid fa-sun hidden dark:inline text-amber-400"></i>
+        </button>
+
+        <!-- NÚT 3 GẠCH -->
+        <button id="hamburgerBtn" onclick="toggleMainMenu()" class="p-2 bg-blue-600 text-white rounded-xl text-sm font-bold shadow hover:bg-blue-700 transition flex items-center justify-center w-9 h-9">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+
+      <!-- DROPDOWN MENU ẨN KHI BẤM 3 GẠCH -->
+      <div id="mainNavMenu" class="hidden absolute top-14 right-4 bg-white dark:bg-slate-800 shadow-2xl rounded-2xl border border-slate-200 dark:border-slate-700 w-56 p-2 z-50 flex flex-col space-y-1">
+        <div class="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tài khoản & Hệ thống</div>
+        
+        <button id="candidateAccountBtn" class="flex items-center space-x-3 w-full px-3 py-2 text-left text-xs font-semibold rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+          <i class="fa-solid fa-user text-blue-600 w-4"></i>
+          <span id="navAccountState">Đăng nhập Ứng Viên</span>
+        </button>
+
+        <button id="adminLoginBtn" class="flex items-center space-x-3 w-full px-3 py-2 text-left text-xs font-semibold rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+          <i class="fa-solid fa-user-gear text-purple-600 w-4"></i>
+          <span id="adminNavText">Đăng nhập Admin</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- CONTAINER CHÍNH -->
+  <main class="max-w-xl mx-auto p-3 sm:p-4 pb-16">
+
+    <!-- KHU VỰC CHƯA ĐĂNG NHẬP -->
+    <div id="authRequiredView" class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 text-center space-y-4">
+      <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <h2 class="text-lg font-bold">Yêu Cầu Đăng Nhập</h2>
+      <p class="text-xs text-slate-500 leading-relaxed">Vui lòng bấm Menu 3 gạch hoặc nút dưới đây để đăng nhập bằng số CCCD trước khi điền hồ sơ ứng tuyển.</p>
+      <button onclick="openCandidateModal('login')" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm shadow-md transition">
+        Đăng Nhập / Đăng Ký Ngay
+      </button>
+    </div>
+
+    <!-- GIAO DIỆN NỘP HỒ SƠ ỨNG VIÊN -->
+    <div id="candidateFormView" class="hidden bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+      
+      <div class="bg-blue-50 dark:bg-slate-700/50 p-4 border-b border-blue-100 dark:border-slate-700 text-xs text-blue-800 dark:text-blue-200 flex items-start space-x-2">
+        <i class="fa-solid fa-circle-info text-blue-500 mt-0.5"></i>
+        <span>Bạn đã đăng nhập thành công. Vui lòng hoàn tất thông tin bên dưới để nộp cho bộ phận HR.</span>
+      </div>
+
+      <form id="recruitmentForm" class="p-4 sm:p-5 space-y-5">
+
+        <!-- THÔNG TIN VỊ TRÍ & PHỎNG VẤN -->
+        <div>
+          <h3 class="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-3 flex items-center space-x-2">
+            <i class="fa-solid fa-briefcase"></i>
+            <span>Vị Trí & Lịch Hẹn Phỏng Vấn</span>
+          </h3>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold mb-1">Vị trí ứng tuyển *</label>
+              <select id="position" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="">-- Chọn vị trí --</option>
+                <option value="Công nhân sản xuất">Công nhân sản xuất</option>
+                <option value="IT (Công nghệ thông tin)">IT (Công nghệ thông tin)</option>
+                <option value="Trợ lý">Trợ lý</option>
+                <option value="Nhân viên thu mua xuất nhập khẩu">Nhân viên thu mua xuất nhập khẩu</option>
+                <option value="QC / IQC">QC / IQC</option>
+                <option value="Tổ trưởng">Tổ trưởng</option>
+                <option value="Phiên dịch">Phiên dịch</option>
+                <option value="Nhân viên Văn phòng">Nhân viên Văn phòng</option>
+              </select>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold mb-1">Ngày phỏng vấn (dd/mm/yyyy) *</label>
+                <input type="text" id="interviewDate" placeholder="dd/mm/yyyy" maxlength="10" required class="date-mask w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">Ca phỏng vấn *</label>
+                <select id="interviewShift" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                  <option value="Ca sáng 1 (08:30 - 10:00)">Ca sáng 1 (08:30 - 10:00)</option>
+                  <option value="Ca sáng 2 (10:00 - 11:30)">Ca sáng 2 (10:00 - 11:30)</option>
+                  <option value="Ca chiều 1 (13:30 - 15:00)">Ca chiều 1 (13:30 - 15:00)</option>
+                  <option value="Ca chiều 2 (15:00 - 16:30)">Ca chiều 2 (15:00 - 16:30)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="border-slate-200 dark:border-slate-700">
+
+        <!-- THÔNG TIN CÁ NHÂN -->
+        <div>
+          <h3 class="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-3 flex items-center space-x-2">
+            <i class="fa-solid fa-user"></i>
+            <span>Thông Tin Cá Nhân</span>
+          </h3>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold mb-1">Họ và tên (Tự động in hoa) *</label>
+              <input type="text" id="fullName" required placeholder="NGUYỄN VĂN A" class="uppercase-all w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold mb-1">Ngày sinh (dd/mm/yyyy) *</label>
+                <input type="text" id="dob" placeholder="22/12/2002" maxlength="10" required class="date-mask w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">Giới tính *</label>
+                <select id="gender" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                  <option value="Nam">Nam</option>
+                  <option value="Nữ">Nữ</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs font-semibold mb-1">Số CCCD (12 số) *</label>
+                <input type="text" id="idCard" maxlength="12" readonly class="w-full px-3 py-2 bg-slate-200 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-sm outline-none font-bold">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">Ngày cấp CCCD *</label>
+                <input type="text" id="idCardIssueDate" placeholder="dd/mm/yyyy" maxlength="10" required class="date-mask w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">Số điện thoại (10 số) *</label>
+                <input type="tel" id="phone" maxlength="10" pattern="0\d{9}" required placeholder="0987654321" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold mb-1">Địa chỉ thường trú *</label>
+                <input type="text" id="permanentAddress" required placeholder="Số nhà, đường, xã/phường, tỉnh/thành..." class="capitalize-first w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">Quốc tịch *</label>
+                <input type="text" id="nationality" required placeholder="Việt Nam" value="Việt Nam" class="capitalize-first w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold mb-1">Mã số BHXH</label>
+                <input type="text" id="bhxh" placeholder="Mã BHXH" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">Mã số thuế</label>
+                <input type="text" id="taxCode" placeholder="Mã số thuế" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <label class="block text-xs font-semibold mb-1">Dân tộc</label>
+                <input type="text" id="ethnicity" placeholder="Kinh" class="capitalize-first w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">Tôn giáo</label>
+                <input type="text" id="religion" placeholder="Không" class="capitalize-first w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">Ngoại ngữ *</label>
+                <select id="foreignLang" required class="w-full px-2 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                  <option value="Không">Không</option>
+                  <option value="Tiếng Trung">Tiếng Trung</option>
+                  <option value="Tiếng Anh">Tiếng Anh</option>
+                  <option value="Tiếng Nhật">Tiếng Nhật</option>
+                  <option value="Tiếng Hàn">Tiếng Hàn</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold mb-1">Chiều cao (cm)</label>
+                <input type="number" id="height" placeholder="165" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">Cân nặng (kg)</label>
+                <input type="number" id="weight" placeholder="55" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="border-slate-200 dark:border-slate-700">
+
+        <!-- THÔNG TIN TẢI ẢNH -->
+        <div>
+          <h3 class="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-3 flex items-center space-x-2">
+            <i class="fa-solid fa-camera"></i>
+            <span>Tải Ảnh Hồ Sơ</span>
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-semibold mb-1">CCCD Mặt trước</label>
+              <input type="file" id="imgFront" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-1">CCCD Mặt sau</label>
+              <input type="file" id="imgBack" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-1">Ảnh chân dung</label>
+              <input type="file" id="imgPortrait" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+            </div>
+          </div>
+        </div>
+
+        <hr class="border-slate-200 dark:border-slate-700">
+
+        <!-- HỌC VẤN -->
+        <div>
+          <h3 class="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-3 flex items-center space-x-2">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span>Học Vấn</span>
+          </h3>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold mb-1">Tên trường đào tạo</label>
+              <input type="text" id="schoolName" placeholder="Tên trường ĐH / CĐ / THPT" class="capitalize-first w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold mb-1">Thời gian học</label>
+                <input type="text" id="eduTimeRange" placeholder="2019 - 2023" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">Năm tốt nghiệp</label>
+                <input type="number" id="gradYear" placeholder="2023" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="border-slate-200 dark:border-slate-700">
+
+        <!-- THÂN NHÂN - TÊN AUTO IN HOA -->
+        <div>
+          <h3 class="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-3 flex items-center space-x-2">
+            <i class="fa-solid fa-users"></i>
+            <span>Thông Tin Thân Nhân (Khẩn Cấp)</span>
+          </h3>
+          <div class="space-y-3">
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <label class="block text-xs font-semibold mb-1">Mối quan hệ</label>
+                <select id="relativeRelation" class="w-full px-2 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                  <option value="Bố">Bố</option>
+                  <option value="Mẹ">Mẹ</option>
+                  <option value="Anh">Anh</option>
+                  <option value="Chị">Chị</option>
+                  <option value="Em">Em</option>
+                </select>
+              </div>
+              <div class="col-span-2">
+                <label class="block text-xs font-semibold mb-1">Tên người thân (Auto IN HOA) *</label>
+                <input type="text" id="relativeName" placeholder="NGUYỄN VĂN B" class="uppercase-all w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-1">SĐT người thân (10 số)</label>
+              <input type="tel" id="relativePhone" maxlength="10" placeholder="09xxxxxxx" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+          </div>
+        </div>
+
+        <hr class="border-slate-200 dark:border-slate-700">
+
+        <!-- KINH NGHIỆM LÀM VIỆC -->
+        <div>
+          <h3 class="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-3 flex items-center space-x-2">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>Kinh Nghiệm Làm Việc</span>
+          </h3>
+          <div>
+            <textarea id="workExperience" rows="3" placeholder="Tóm tắt công ty cũ, vị trí làm việc..." class="capitalize-first w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold rounded-xl shadow-lg transition duration-200">
+          NỘP HỒ SƠ ĐĂNG KÝ
+        </button>
+      </form>
+    </div>
+
+    <!-- MÀN HÌNH SAU KHI NỘP HỒ SƠ -->
+    <div id="statusView" class="hidden bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 text-center space-y-4">
+      <div id="statusIcon" class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+        <i class="fa-solid fa-hourglass-half"></i>
+      </div>
+      <h2 id="statusTitle" class="text-xl font-bold">Hồ Sơ Đã Được Gửi Thành Công!</h2>
+      <p class="text-xs text-slate-500">Mã lịch hẹn của bạn: <b id="resCode" class="text-blue-600 text-base">--</b></p>
+
+      <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center space-y-2">
+        <div id="qrcode" class="p-2 bg-white rounded-xl shadow-sm"></div>
+        <p class="text-[11px] text-slate-500">Đưa mã QR này cho bảo vệ/HR khi đến phỏng vấn</p>
+      </div>
+
+      <div id="statusAlertBox" class="p-4 rounded-xl border text-xs text-left leading-relaxed">
+        --
+      </div>
+
+      <button onclick="resetCandidateFormAndReturn()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md transition">
+        Quay lại trang chủ (Tạo hồ sơ mới)
+      </button>
+    </div>
+
+    <!-- GIAO DIỆN ADMIN -->
+    <div id="adminDashboardView" class="hidden space-y-4">
+      <div class="flex items-center justify-between bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div>
+          <h2 class="text-base font-bold text-blue-600">QUẢN LÝ HỒ SƠ ỨNG VIÊN</h2>
+          <p class="text-xs text-slate-500">Duyệt hồ sơ & Tra cứu mã phỏng vấn</p>
+        </div>
+        <button id="adminLogoutBtn" class="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-lg transition">Đăng xuất Admin</button>
+      </div>
+
+      <!-- TAB CHUYỂN ĐỔI ADMIN -->
+      <div class="flex bg-slate-200 dark:bg-slate-700 p-1 rounded-xl">
+        <button id="tabBtnCandidates" onclick="switchAdminTab('candidates')" class="flex-1 py-1.5 text-xs font-bold rounded-lg bg-white dark:bg-slate-800 shadow-sm text-blue-600">
+          Danh Sách Hồ Sơ
+        </button>
+        <button id="tabBtnBlacklist" onclick="switchAdminTab('blacklist')" class="flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-600 dark:text-slate-300">
+          Danh Sách Đen (Blacklist)
+        </button>
+      </div>
+
+      <!-- PHẦN 1: QUẢN LÝ HỒ SƠ ỨNG VIÊN -->
+      <div id="adminTabCandidates" class="space-y-4">
+        <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">Tra cứu / Check mã hồ sơ phỏng vấn:</label>
+          <div class="flex space-x-2">
+            <input type="text" id="adminSearchCode" placeholder="Nhập mã phỏng vấn hoặc CCCD" class="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-900 border rounded-xl text-sm outline-none">
+            <button onclick="searchCandidateCode()" class="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-700">
+              <i class="fa-solid fa-magnifying-glass"></i> Check
+            </button>
+            <button onclick="renderAdminCandidates()" class="px-3 py-2 bg-slate-200 dark:bg-slate-700 text-xs font-bold rounded-xl">Tất cả</button>
+          </div>
+        </div>
+
+        <div id="candidateListContainer" class="space-y-3"></div>
+      </div>
+
+      <!-- PHẦN 2: BLACKLIST -->
+      <div id="adminTabBlacklist" class="hidden space-y-4">
+        <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
+          <h3 class="text-xs font-bold uppercase text-red-600">Thêm CCCD Vào Danh Sách Đen (Cấm Tuyển Dụng)</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input type="text" id="blackCccd" maxlength="12" placeholder="Nhập 12 số CCCD cấm" class="px-3 py-2 bg-slate-50 dark:bg-slate-900 border rounded-xl text-sm outline-none">
+            <input type="text" id="blackReason" placeholder="Lý do cấm (Ví dụ: Vi phạm nội quy cũ)" class="px-3 py-2 bg-slate-50 dark:bg-slate-900 border rounded-xl text-sm outline-none">
+          </div>
+          <button onclick="addBlacklist()" class="w-full py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl transition">
+            + THÊM VÀO BLACKLIST
+          </button>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
+          <h3 class="text-xs font-bold text-slate-700 dark:text-slate-300">Danh Sách CCCD Bị Cấm Tuyển Dụng</h3>
+          <div id="blacklistContainer" class="space-y-2"></div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- MODAL XEM CẢ BỘ ẢNH CCCD / CHÂN DUNG -->
+  <div id="imageViewerModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full p-4 shadow-2xl relative space-y-3 border border-slate-700">
+      <button onclick="document.getElementById('imageViewerModal').classList.add('hidden')" class="absolute top-3 right-3 text-slate-400 hover:text-white text-xl">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <h3 class="text-sm font-bold text-center border-b pb-2">Hình Ảnh Hồ Sơ Ứng Viên</h3>
+      <div id="modalImageContent" class="space-y-3 max-h-[75vh] overflow-y-auto"></div>
+    </div>
+  </div>
+
+  <!-- MODAL ĐĂNG NHẬP / ĐĂNG KÝ / QUÊN MK ỨNG VIÊN -->
+  <div id="candidateAuthModal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-xl relative border border-slate-200 dark:border-slate-700">
+      <button onclick="closeCandidateModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <!-- TAB ĐĂNG NHẬP -->
+      <div id="tabLogin" class="space-y-4">
+        <h3 class="text-lg font-bold text-center">Đăng Nhập Ứng Viên</h3>
+        <form id="formCandidateLogin" class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold mb-1">Số CCCD (12 số)</label>
+            <input type="text" id="loginCccd" maxlength="12" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border rounded-xl text-sm outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-1">Mật khẩu</label>
+            <input type="password" id="loginPass" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border rounded-xl text-sm outline-none">
+          </div>
+          <button type="submit" class="w-full py-2.5 bg-blue-600 text-white font-bold rounded-xl text-sm">Đăng Nhập</button>
+        </form>
+        <div class="flex justify-between text-xs text-blue-600 pt-2">
+          <button onclick="switchTab('register')" class="hover:underline">Đăng ký tài khoản</button>
+          <button onclick="switchTab('forgot')" class="hover:underline">Quên mật khẩu?</button>
+        </div>
+      </div>
+
+      <!-- TAB ĐĂNG KÝ -->
+      <div id="tabRegister" class="hidden space-y-4">
+        <h3 class="text-lg font-bold text-center">Đăng Ký Tài Khoản</h3>
+        <form id="formCandidateRegister" class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold mb-1">Số CCCD (12 số)</label>
+            <input type="text" id="regCccd" maxlength="12" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border rounded-xl text-sm outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-1">Số điện thoại (10 số)</label>
+            <input type="tel" id="regPhone" maxlength="10" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border rounded-xl text-sm outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-1">Tạo mật khẩu</label>
+            <input type="password" id="regPass" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border rounded-xl text-sm outline-none">
+          </div>
+          <button type="submit" class="w-full py-2.5 bg-green-600 text-white font-bold rounded-xl text-sm">Tạo Tài Khoản</button>
+        </form>
+        <div class="text-center text-xs text-blue-600 pt-2">
+          <button onclick="switchTab('login')" class="hover:underline">Đã có tài khoản? Đăng nhập</button>
+        </div>
+      </div>
+
+      <!-- TAB QUÊN MẬT KHẨU -->
+      <div id="tabForgot" class="hidden space-y-4">
+        <h3 class="text-lg font-bold text-center">Quên Mật Khẩu</h3>
+        <form id="formCandidateForgot" class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold mb-1">Xác minh số CCCD (12 số)</label>
+            <input type="text" id="forgotCccd" maxlength="12" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border rounded-xl text-sm outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-1">Mật khẩu mới</label>
+            <input type="password" id="forgotNewPass" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border rounded-xl text-sm outline-none">
+          </div>
+          <button type="submit" class="w-full py-2.5 bg-orange-600 text-white font-bold rounded-xl text-sm">Cập Nhập Mật Khẩu</button>
+        </form>
+        <div class="text-center text-xs text-blue-600 pt-2">
+          <button onclick="switchTab('login')" class="hover:underline">Quay lại Đăng nhập</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL ĐĂNG NHẬP ADMIN -->
+  <div id="adminAuthModal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-xl relative border border-slate-200 dark:border-slate-700">
+      <button onclick="document.getElementById('adminAuthModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+      <h3 class="text-lg font-bold mb-4 text-center">Đăng Nhập Quản Trị Viên</h3>
+      <form id="adminLoginForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold mb-1">Tài khoản Admin</label>
+          <input type="text" id="adminUser" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border rounded-xl text-sm outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Mật khẩu</label>
+          <input type="password" id="adminPass" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border rounded-xl text-sm outline-none">
+        </div>
+        <button type="submit" class="w-full py-2.5 bg-blue-600 text-white font-bold rounded-xl text-sm">Đăng Nhập Admin</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT XỬ LÝ TOÀN BỘ -->
+  <script>
+    let currentCandidateUser = null;
+    let isAdminLoggedIn = false;
+
+    /* 1. ĐỔI TRẠNG THÁI MENU 3 GẠCH KHI BẤM */
+    function toggleMainMenu() {
+      const menu = document.getElementById('mainNavMenu');
+      menu.classList.toggle('hidden');
+    }
+
+    // Đóng Menu khi bấm ra ngoài
+    document.addEventListener('click', (e) => {
+      const menu = document.getElementById('mainNavMenu');
+      const btn = document.getElementById('hamburgerBtn');
+      if (!menu.contains(e.target) && !btn.contains(e.target)) {
+        menu.classList.add('hidden');
+      }
+    });
+
+    /* 2. TOAST NOTIFICATION */
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      let bg = 'bg-slate-800 text-white';
+      let icon = 'fa-circle-info text-blue-400';
+
+      if(type === 'success') {
+        bg = 'bg-emerald-600 text-white';
+        icon = 'fa-circle-check text-white';
+      } else if(type === 'error') {
+        bg = 'bg-rose-600 text-white';
+        icon = 'fa-triangle-exclamation text-white';
+      } else if(type === 'warning') {
+        bg = 'bg-amber-500 text-white';
+        icon = 'fa-circle-exclamation text-white';
+      }
+
+      toast.className = `toast-enter flex items-center space-x-3 px-4 py-3 rounded-2xl shadow-xl text-xs font-bold ${bg} pointer-events-auto border border-white/20`;
+      toast.innerHTML = `
+        <i class="fa-solid ${icon} text-base"></i>
+        <span>${message}</span>
+      `;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.remove('toast-enter');
+        toast.classList.add('toast-exit');
+        toast.addEventListener('animationend', () => toast.remove());
+      }, 3500);
+    }
+
+    /* 3. TỰ ĐỘNG KHÔI PHỤC PHIÊN LÀM VIỆC */
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedCandidate = localStorage.getItem('activeCandidateSession');
+      const savedAdmin = localStorage.getItem('activeAdminSession');
+
+      if(savedAdmin === 'true') {
+        isAdminLoggedIn = true;
+        document.getElementById('adminNavText').innerText = "Admin (Đang Online)";
+        document.getElementById('authRequiredView').classList.add('hidden');
+        document.getElementById('adminDashboardView').classList.remove('hidden');
+        renderAdminCandidates();
+        renderBlacklist();
+        showToast("Xin chào Admin! Đã khôi phục phiên làm việc.", "info");
+      } else if(savedCandidate) {
+        currentCandidateUser = JSON.parse(savedCandidate);
+        document.getElementById('navAccountState').innerText = `CCCD: ${currentCandidateUser.cccd}`;
+        document.getElementById('authRequiredView').classList.add('hidden');
+        document.getElementById('idCard').value = currentCandidateUser.cccd;
+        checkCandidateStatus(currentCandidateUser.cccd);
+      }
+    });
+
+    /* 4. TỰ ĐỘNG IN HOA & ĐỊNH DẠNG DD/MM/YYYY */
+    document.querySelectorAll('.capitalize-first').forEach(input => {
+      input.addEventListener('input', function() {
+        let words = this.value.split(' ');
+        for (let i = 0; i < words.length; i++) {
+          if (words[i].length > 0) {
+            words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+          }
+        }
+        this.value = words.join(' ');
+      });
+    });
+
+    document.querySelectorAll('.date-mask').forEach(input => {
+      input.addEventListener('input', function() {
+        let v = this.value.replace(/\D/g, '');
+        if (v.length > 8) v = v.substring(0, 8);
+        if (v.length >= 5) {
+          this.value = `${v.substring(0, 2)}/${v.substring(2, 4)}/${v.substring(4)}`;
+        } else if (v.length >= 3) {
+          this.value = `${v.substring(0, 2)}/${v.substring(2)}`;
+        } else {
+          this.value = v;
+        }
+      });
+    });
+
+    /* 5. TÍNH NĂNG DARK/LIGHT MODE */
+    document.getElementById('themeToggleBtn').addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+    });
+
+    /* 6. XỬ LÝ ĐĂNG NHẬP / CẠNH TRANH PHIÊN NGUỜI DÙNG */
+    const candidateAuthModal = document.getElementById('candidateAuthModal');
+    
+    function openCandidateModal(tab = 'login') {
+      document.getElementById('mainNavMenu').classList.add('hidden');
+      if(isAdminLoggedIn) {
+        if(confirm("Bạn đang đăng nhập Admin. Muốn đăng xuất Admin để dùng tài khoản Ứng viên?")) {
+          logoutAdmin();
+        }
+        return;
+      }
+      switchTab(tab);
+      candidateAuthModal.classList.remove('hidden');
+    }
+
+    function closeCandidateModal() {
+      candidateAuthModal.classList.add('hidden');
+    }
+
+    document.getElementById('candidateAccountBtn').addEventListener('click', () => {
+      document.getElementById('mainNavMenu').classList.add('hidden');
+      if(currentCandidateUser) {
+        if(confirm(`Đăng xuất tài khoản CCCD: ${currentCandidateUser.cccd}?`)) {
+          localStorage.removeItem('activeCandidateSession');
+          showToast("Đã đăng xuất tài khoản thành công!", "info");
+          setTimeout(() => location.reload(), 800);
+        }
+      } else {
+        openCandidateModal('login');
+      }
+    });
+
+    function switchTab(tab) {
+      document.getElementById('tabLogin').classList.add('hidden');
+      document.getElementById('tabRegister').classList.add('hidden');
+      document.getElementById('tabForgot').classList.add('hidden');
+
+      if(tab === 'login') document.getElementById('tabLogin').classList.remove('hidden');
+      if(tab === 'register') document.getElementById('tabRegister').classList.remove('hidden');
+      if(tab === 'forgot') document.getElementById('tabForgot').classList.remove('hidden');
+    }
+
+    // Đăng ký tài khoản
+    document.getElementById('formCandidateRegister').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const cccd = document.getElementById('regCccd').value;
+      const phone = document.getElementById('regPhone').value;
+      const pass = document.getElementById('regPass').value;
+
+      if(cccd.length !== 12 || phone.length !== 10) {
+        showToast("Vui lòng nhập đủ 12 số CCCD và 10 số điện thoại!", "error");
+        return;
+      }
+
+      let users = JSON.parse(localStorage.getItem('usersDB') || '[]');
+      if(users.find(u => u.cccd === cccd)) {
+        showToast("Số CCCD này đã được đăng ký!", "warning");
+        return;
+      }
+
+      users.push({ cccd, phone, pass });
+      localStorage.setItem('usersDB', JSON.stringify(users));
+      showToast("Đăng ký tài khoản thành công! Hãy đăng nhập.", "success");
+      switchTab('login');
+    });
+
+    // Đăng nhập ứng viên
+    document.getElementById('formCandidateLogin').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const cccd = document.getElementById('loginCccd').value;
+      const pass = document.getElementById('loginPass').value;
+
+      let users = JSON.parse(localStorage.getItem('usersDB') || '[]');
+      const user = users.find(u => u.cccd === cccd && u.pass === pass);
+
+      if(user) {
+        currentCandidateUser = user;
+        localStorage.setItem('activeCandidateSession', JSON.stringify(user));
+        document.getElementById('navAccountState').innerText = `CCCD: ${cccd}`;
+        closeCandidateModal();
+
+        document.getElementById('authRequiredView').classList.add('hidden');
+        document.getElementById('idCard').value = cccd;
+        
+        showToast("Đăng nhập ứng viên thành công!", "success");
+        checkCandidateStatus(cccd);
+      } else {
+        showToast("CCCD hoặc mật khẩu không chính xác!", "error");
+      }
+    });
+
+    // Quên mật khẩu
+    document.getElementById('formCandidateForgot').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const cccd = document.getElementById('forgotCccd').value;
+      const newPass = document.getElementById('forgotNewPass').value;
+
+      let users = JSON.parse(localStorage.getItem('usersDB') || '[]');
+      const index = users.findIndex(u => u.cccd === cccd);
+
+      if(index !== -1) {
+        users[index].pass = newPass;
+        localStorage.setItem('usersDB', JSON.stringify(users));
+        showToast("Đổi mật khẩu thành công! Vui lòng đăng nhập lại.", "success");
+        switchTab('login');
+      } else {
+        showToast("Số CCCD không tồn tại trong hệ thống!", "error");
+      }
+    });
+
+    /* 7. XEM TRẠNG THÁI HỒ SƠ ỨNG VIÊN */
+    function checkCandidateStatus(cccd) {
+      const candidates = JSON.parse(localStorage.getItem('candidatesDB') || '[]');
+      const record = candidates.find(c => c.idCard === cccd);
+
+      if(record) {
+        document.getElementById('candidateFormView').classList.add('hidden');
+        document.getElementById('statusView').classList.remove('hidden');
+        document.getElementById('resCode').innerText = record.code;
+
+        document.getElementById("qrcode").innerHTML = "";
+        new QRCode(document.getElementById("qrcode"), {
+          text: record.code,
+          width: 128,
+          height: 128
+        });
+
+        const box = document.getElementById('statusAlertBox');
+        if(record.status === 'PASSED') {
+          box.className = "p-4 rounded-xl border border-green-300 bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-200 text-xs text-left leading-relaxed font-medium";
+          box.innerText = "Thông tin được HR Wistron chấp thuận, yêu cầu bạn đúng lịch đến phỏng vấn. Xin cảm ơn!";
+        } else if(record.status === 'FAILED') {
+          box.className = "p-4 rounded-xl border border-red-300 bg-red-50 dark:bg-red-900/30 text-red-800 dark:text-red-200 text-xs text-left leading-relaxed font-medium";
+          box.innerText = "Rất tiếc, hồ sơ của bạn chưa phù hợp với vị trí này. Cảm ơn bạn đã quan tâm đến Wistron!";
+        } else {
+          box.className = "p-4 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 text-xs text-left leading-relaxed font-medium";
+          box.innerText = "Thông tin ứng tuyển của bạn đang được bộ phận HR xét duyệt. Vui lòng chờ, nếu nhận được thông báo ĐẠT thì sẽ được đến phỏng vấn.";
+        }
+      } else {
+        document.getElementById('statusView').classList.add('hidden');
+        document.getElementById('candidateFormView').classList.remove('hidden');
+      }
+    }
+
+    function resetCandidateFormAndReturn() {
+      document.getElementById('recruitmentForm').reset();
+      document.getElementById('idCard').value = currentCandidateUser.cccd;
+      document.getElementById('statusView').classList.add('hidden');
+      document.getElementById('candidateFormView').classList.remove('hidden');
+      showToast("Sẵn sàng cho thông tin ứng tuyển mới!", "info");
+    }
+
+    /* 8. TÍNH NĂNG CHUYỂN FILE ĐỂ LƯU BASE64 */
+    function fileToBase64(file) {
+      return new Promise((resolve) => {
+        if (!file) resolve(null);
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    /* 9. HAM TẠO THỜI GIAN ĐẦY ĐỦ THỨ, NGÀY GIỜ CHI TIẾT */
+    function getFullDetailedDateTime() {
+      const now = new Date();
+      const days = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+      const dayName = days[now.getDay()];
+      
+      const dd = String(now.getDate()).padStart(2, '0');
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const yyyy = now.getFullYear();
+
+      const hh = String(now.getHours()).padStart(2, '0');
+      const min = String(now.getMinutes()).padStart(2, '0');
+      const ss = String(now.getSeconds()).padStart(2, '0');
+
+      return `${dayName}, ${dd}/${mm}/${yyyy} - ${hh}:${min}:${ss}`;
+    }
+
+    /* 10. NỘP HỒ SƠ & CHECK BLACKLIST CCCD */
+    document.getElementById('recruitmentForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const cccdInput = currentCandidateUser.cccd;
+
+      // KIỂM TRA BLACKLIST
+      const blacklist = JSON.parse(localStorage.getItem('blacklistDB') || '[]');
+      const blockedItem = blacklist.find(b => b.cccd === cccdInput);
+
+      if(blockedItem) {
+        showToast("LỖI: Bạn không được tuyển dụng lại!", "error");
+        alert(`BẠN KHÔNG ĐƯỢC TUYỂN DỤNG LẠI!\nLý do từ HR: ${blockedItem.reason || 'Nằm trong danh sách cấm'}`);
+        return;
+      }
+
+      const idCardIssueDateVal = document.getElementById('idCardIssueDate').value;
+      if(idCardIssueDateVal.length !== 10) {
+        showToast("Vui lòng nhập Ngày cấp CCCD đúng định dạng dd/mm/yyyy!", "error");
+        return;
+      }
+
+      const phone = document.getElementById('phone').value;
+      if(phone.length !== 10) {
+        showToast("Số điện thoại phải đủ 10 số!", "error");
+        return;
+      }
+
+      const dobVal = document.getElementById('dob').value;
+      if(dobVal.length !== 10) {
+        showToast("Vui lòng nhập ngày sinh định dạng dd/mm/yyyy!", "error");
+        return;
+      }
+
+      const interviewDateVal = document.getElementById('interviewDate').value;
+      if(interviewDateVal.length !== 10) {
+        showToast("Vui lòng nhập ngày phỏng vấn dd/mm/yyyy!", "error");
+        return;
+      }
+
+      const imgFrontFile = document.getElementById('imgFront').files[0];
+      const imgBackFile = document.getElementById('imgBack').files[0];
+      const imgPortraitFile = document.getElementById('imgPortrait').files[0];
+
+      const imgFrontBase64 = await fileToBase64(imgFrontFile);
+      const imgBackBase64 = await fileToBase64(imgBackFile);
+      const imgPortraitBase64 = await fileToBase64(imgPortraitFile);
+
+      // THỜI GIAN GỬI CHI TIẾT
+      const detailedSubmitTime = getFullDetailedDateTime();
+
+      const candidateData = {
+        code: 'WVN-' + Math.floor(10000 + Math.random() * 90000),
+        position: document.getElementById('position').value,
+        interviewDate: interviewDateVal,
+        interviewShift: document.getElementById('interviewShift').value,
+        fullName: document.getElementById('fullName').value.toUpperCase(),
+        dob: dobVal,
+        gender: document.getElementById('gender').value,
+        idCard: cccdInput,
+        idCardIssueDate: idCardIssueDateVal, // NGÀY CẤP CCCD
+        phone: phone,
+        permanentAddress: document.getElementById('permanentAddress').value,
+        nationality: document.getElementById('nationality').value || 'Việt Nam',
+        bhxh: document.getElementById('bhxh').value || 'Không có',
+        taxCode: document.getElementById('taxCode').value || 'Không có',
+        ethnicity: document.getElementById('ethnicity').value || 'Kinh',
+        religion: document.getElementById('religion').value || 'Không',
+        foreignLang: document.getElementById('foreignLang').value,
+        height: document.getElementById('height').value || 'N/A',
+        weight: document.getElementById('weight').value || 'N/A',
+        schoolName: document.getElementById('schoolName').value || 'N/A',
+        eduTimeRange: document.getElementById('eduTimeRange').value || 'N/A',
+        gradYear: document.getElementById('gradYear').value || 'N/A',
+        relativeRelation: document.getElementById('relativeRelation').value,
+        relativeName: document.getElementById('relativeName').value.toUpperCase(), // IN HOA NGƯỜI THÂN
+        relativePhone: document.getElementById('relativePhone').value || 'N/A',
+        workExperience: document.getElementById('workExperience').value || 'Không có',
+        images: {
+          front: imgFrontBase64,
+          back: imgBackBase64,
+          portrait: imgPortraitBase64
+        },
+        status: 'PENDING',
+        createdAtFull: detailedSubmitTime // GỬI THỜI GIAN CHI TIẾT
+      };
+
+      let existingList = JSON.parse(localStorage.getItem('candidatesDB') || '[]');
+      existingList = existingList.filter(c => c.idCard !== cccdInput);
+      existingList.unshift(candidateData);
+      localStorage.setItem('candidatesDB', JSON.stringify(existingList));
+
+      showToast("Nộp hồ sơ tuyển dụng thành công!", "success");
+      checkCandidateStatus(cccdInput);
+    });
+
+    /* 11. XỬ LÝ ADMIN & QUẢN TRỊ */
+    const adminModal = document.getElementById('adminAuthModal');
+    
+    document.getElementById('adminLoginBtn').addEventListener('click', () => {
+      document.getElementById('mainNavMenu').classList.add('hidden');
+      if(isAdminLoggedIn) {
+        switchAdminTab('candidates');
+        return;
+      }
+
+      if(currentCandidateUser) {
+        if(confirm("Bạn đang đăng nhập tài khoản Ứng Viên. Cần đăng xuất để truy cập Admin?")) {
+          localStorage.removeItem('activeCandidateSession');
+          location.reload();
+        }
+        return;
+      }
+      adminModal.classList.remove('hidden');
+    });
+
+    document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const u = document.getElementById('adminUser').value;
+      const p = document.getElementById('adminPass').value;
+
+      if(u === 'admin' && p === 'admin123') {
+        isAdminLoggedIn = true;
+        localStorage.setItem('activeAdminSession', 'true');
+        
+        adminModal.classList.add('hidden');
+        document.getElementById('authRequiredView').classList.add('hidden');
+        document.getElementById('candidateFormView').classList.add('hidden');
+        document.getElementById('statusView').classList.add('hidden');
+        document.getElementById('adminDashboardView').classList.remove('hidden');
+        document.getElementById('adminNavText').innerText = "Admin (Đang Online)";
+
+        renderAdminCandidates();
+        renderBlacklist();
+        showToast("Đăng nhập Admin thành công!", "success");
+      } else {
+        showToast("Tài khoản hoặc mật khẩu Admin sai!", "error");
+      }
+    });
+
+    function logoutAdmin() {
+      localStorage.removeItem('activeAdminSession');
+      showToast("Đã đăng xuất tài khoản Admin!", "info");
+      setTimeout(() => location.reload(), 800);
+    }
+
+    document.getElementById('adminLogoutBtn').addEventListener('click', logoutAdmin);
+
+    /* 12. TAB ADMIN & BLACKLIST */
+    function switchAdminTab(tab) {
+      if(tab === 'candidates') {
+        document.getElementById('adminTabCandidates').classList.remove('hidden');
+        document.getElementById('adminTabBlacklist').classList.add('hidden');
+        document.getElementById('tabBtnCandidates').className = "flex-1 py-1.5 text-xs font-bold rounded-lg bg-white dark:bg-slate-800 shadow-sm text-blue-600";
+        document.getElementById('tabBtnBlacklist').className = "flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-600 dark:text-slate-300";
+      } else {
+        document.getElementById('adminTabCandidates').classList.add('hidden');
+        document.getElementById('adminTabBlacklist').classList.remove('hidden');
+        document.getElementById('tabBtnBlacklist').className = "flex-1 py-1.5 text-xs font-bold rounded-lg bg-white dark:bg-slate-800 shadow-sm text-red-600";
+        document.getElementById('tabBtnCandidates').className = "flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-600 dark:text-slate-300";
+      }
+    }
+
+    function renderBlacklist() {
+      const container = document.getElementById('blacklistContainer');
+      const list = JSON.parse(localStorage.getItem('blacklistDB') || '[]');
+
+      if (list.length === 0) {
+        container.innerHTML = `<div class="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl text-center text-xs text-slate-500">Danh sách đen đang trống.</div>`;
+        return;
+      }
+
+      container.innerHTML = list.map((item) => `
+        <div class="flex items-center justify-between bg-red-50 dark:bg-red-950/40 p-3 rounded-xl border border-red-200 dark:border-red-900/50 text-xs">
+          <div>
+            <span class="font-bold text-red-600 text-sm block">${item.cccd}</span>
+            <span class="text-slate-600 dark:text-slate-400">Lý do: ${item.reason || 'Không có lý do'}</span>
+          </div>
+          <button onclick="removeBlacklist('${item.cccd}')" class="px-2.5 py-1 bg-white dark:bg-slate-800 text-red-600 rounded-lg font-bold border border-red-200 text-xs hover:bg-red-100">
+            Gỡ cấm
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function addBlacklist() {
+      const cccd = document.getElementById('blackCccd').value.trim();
+      const reason = document.getElementById('blackReason').value.trim();
+
+      if(cccd.length !== 12) {
+        showToast("Vui lòng nhập chính xác 12 số CCCD cần cấm!", "warning");
+        return;
+      }
+
+      let list = JSON.parse(localStorage.getItem('blacklistDB') || '[]');
+      if(list.find(b => b.cccd === cccd)) {
+        showToast("Số CCCD này đã có trong danh sách đen!", "warning");
+        return;
+      }
+
+      list.push({ cccd, reason });
+      localStorage.setItem('blacklistDB', JSON.stringify(list));
+      
+      document.getElementById('blackCccd').value = '';
+      document.getElementById('blackReason').value = '';
+      
+      renderBlacklist();
+      showToast("Đã thêm CCCD vào danh sách cấm tuyển dụng!", "success");
+    }
+
+    function removeBlacklist(cccd) {
+      let list = JSON.parse(localStorage.getItem('blacklistDB') || '[]');
+      list = list.filter(b => b.cccd !== cccd);
+      localStorage.setItem('blacklistDB', JSON.stringify(list));
+      renderBlacklist();
+      showToast("Đã xoá CCCD khỏi danh sách đen!", "info");
+    }
+
+    /* 13. ADMIN XEM HỒ SƠ VỚI ĐẦY ĐỦ THỜI GIAN GỬI CHI TIẾT & NGÀY CẤP CCCD */
+    function renderAdminCandidates(filteredList = null) {
+      const container = document.getElementById('candidateListContainer');
+      const list = filteredList || JSON.parse(localStorage.getItem('candidatesDB') || '[]');
+      
+      if (list.length === 0) {
+        container.innerHTML = `<div class="p-4 bg-white dark:bg-slate-800 rounded-xl text-center text-xs text-slate-500">Không tìm thấy hồ sơ ứng viên.</div>`;
+        return;
+      }
+
+      container.innerHTML = list.map((item) => `
+        <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3 text-xs">
+          <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-2">
+            <div>
+              <span class="font-bold text-blue-600 text-sm">${item.code}</span>
+              <span class="ml-2 px-2 py-0.5 rounded text-[10px] font-bold ${
+                item.status === 'PASSED' ? 'bg-green-100 text-green-700' :
+                item.status === 'FAILED' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'
+              }">${item.status === 'PASSED' ? 'ĐẠT' : item.status === 'FAILED' ? 'KHÔNG ĐẠT' : 'ĐANG CHỜ'}</span>
+            </div>
+            <button onclick="deleteCandidate('${item.code}')" class="text-red-500 hover:text-red-700 font-semibold flex items-center space-x-1">
+              <i class="fa-solid fa-trash-can"></i>
+              <span>Xóa</span>
+            </button>
+          </div>
+
+          <!-- DÒNG THỜI GIAN GỬI CHI TIẾT THỨ, NGÀY GIỜ -->
+          <div class="bg-slate-50 dark:bg-slate-900/60 p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-[11px] text-blue-800 dark:text-blue-300">
+            <i class="fa-solid fa-clock mr-1 text-blue-500"></i>
+            <b>Thời gian nộp:</b> ${item.createdAtFull || 'Chưa ghi nhận'}
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div><b>Họ tên:</b> ${item.fullName}</div>
+            <div><b>Ngày sinh/Giới tính:</b> ${item.dob} (${item.gender})</div>
+            <div><b>SĐT:</b> ${item.phone}</div>
+            <div><b>Số CCCD:</b> ${item.idCard}</div>
+            <div><b>Ngày cấp CCCD:</b> ${item.idCardIssueDate || 'N/A'}</div>
+            <div><b>Vị trí:</b> <span class="font-bold text-blue-600">${item.position}</span></div>
+            <div class="col-span-2"><b>Địa chỉ thường trú:</b> ${item.permanentAddress || 'N/A'}</div>
+            <div><b>Quốc tịch:</b> ${item.nationality || 'Việt Nam'}</div>
+            <div><b>BHXH / Tax:</b> ${item.bhxh} / ${item.taxCode}</div>
+            <div><b>Lịch hẹn:</b> ${item.interviewDate} (${item.interviewShift})</div>
+            <div><b>Học vấn:</b> ${item.schoolName} (${item.gradYear})</div>
+            <div><b>Ngoại ngữ:</b> ${item.foreignLang}</div>
+            <div class="col-span-2"><b>Thân nhân:</b> ${item.relativeRelation} - <span class="font-bold uppercase">${item.relativeName}</span> (${item.relativePhone})</div>
+          </div>
+
+          <div class="pt-1">
+            <button onclick="viewCandidateImages('${item.code}')" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-lg font-bold text-xs flex items-center space-x-1">
+              <i class="fa-solid fa-image"></i>
+              <span>Xem ảnh CCCD & Chân dung</span>
+            </button>
+          </div>
+
+          <div class="flex space-x-2 pt-2 border-t border-slate-100 dark:border-slate-700">
+            <button onclick="updateCandidateStatus('${item.code}', 'PASSED')" class="flex-1 py-1.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition text-center">
+              <i class="fa-solid fa-check mr-1"></i> Đạt
+            </button>
+            <button onclick="updateCandidateStatus('${item.code}', 'FAILED')" class="flex-1 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition text-center">
+              <i class="fa-solid fa-xmark mr-1"></i> Không Đạt
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function searchCandidateCode() {
+      const codeInput = document.getElementById('adminSearchCode').value.trim().toUpperCase();
+      if(!codeInput) {
+        renderAdminCandidates();
+        return;
+      }
+      const list = JSON.parse(localStorage.getItem('candidatesDB') || '[]');
+      const filtered = list.filter(item => item.code.includes(codeInput) || item.idCard.includes(codeInput));
+      renderAdminCandidates(filtered);
+    }
+
+    function viewCandidateImages(code) {
+      const list = JSON.parse(localStorage.getItem('candidatesDB') || '[]');
+      const candidate = list.find(c => c.code === code);
+      if(!candidate || !candidate.images) {
+        showToast("Ứng viên này không có hình ảnh!", "warning");
+        return;
+      }
+
+      const modalContent = document.getElementById('modalImageContent');
+      modalContent.innerHTML = `
+        <div class="space-y-1">
+          <p class="text-xs font-bold text-slate-500">Mặt trước CCCD:</p>
+          ${candidate.images.front ? `<img src="${candidate.images.front}" class="w-full rounded-xl border">` : `<p class="text-xs text-red-500">Chưa có ảnh</p>`}
+        </div>
+        <div class="space-y-1">
+          <p class="text-xs font-bold text-slate-500">Mặt sau CCCD:</p>
+          ${candidate.images.back ? `<img src="${candidate.images.back}" class="w-full rounded-xl border">` : `<p class="text-xs text-red-500">Chưa có ảnh</p>`}
+        </div>
+        <div class="space-y-1">
+          <p class="text-xs font-bold text-slate-500">Ảnh chân dung:</p>
+          ${candidate.images.portrait ? `<img src="${candidate.images.portrait}" class="w-full rounded-xl border">` : `<p class="text-xs text-red-500">Chưa có ảnh</p>`}
+        </div>
+      `;
+      document.getElementById('imageViewerModal').classList.remove('hidden');
+    }
+
+    function deleteCandidate(code) {
+      if(confirm("Bạn có chắc muốn xóa hồ sơ mã: " + code + "?")) {
+        let list = JSON.parse(localStorage.getItem('candidatesDB') || '[]');
+        list = list.filter(c => c.code !== code);
+        localStorage.setItem('candidatesDB', JSON.stringify(list));
+        renderAdminCandidates();
+        showToast("Đã xóa hồ sơ thành công!", "info");
+      }
+    }
+
+    function updateCandidateStatus(code, status) {
+      let list = JSON.parse(localStorage.getItem('candidatesDB') || '[]');
+      const index = list.findIndex(c => c.code === code);
+      if(index !== -1) {
+        list[index].status = status;
+        localStorage.setItem('candidatesDB', JSON.stringify(list));
+        renderAdminCandidates();
+        showToast(`Đã duyệt trạng thái hồ sơ thành: ${status === 'PASSED' ? 'ĐẠT' : 'KHÔNG ĐẠT'}`, "success");
+      }
+    }
+
+    /* 14. BẢO MẬT & CHẶN F12 / CHUỘT PHẢI */
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', function(e) {
+      if (
+        e.keyCode === 123 ||
+        (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) ||
+        (e.ctrlKey && e.keyCode === 85)
+      ) {
+        e.preventDefault();
+        return false;
+      }
+    });
+  </script>
+</body>
+</html>
